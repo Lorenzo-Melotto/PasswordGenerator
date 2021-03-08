@@ -8,13 +8,31 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String _password = "Click the button to generate a password";
+  ///The password that will be generated
+  String _password = "";
+  var settings = {
+    'length': 16,
+    'includeSymbols': true,
+    'includeNumbers': true,
+  };
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Password Generator"),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.more_vert),
+            onPressed: () async {
+              dynamic newSettings = await Navigator.of(context)
+                  .pushNamed('/settings', arguments: settings);
+              setState(() {
+                settings = newSettings;
+              });
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Container(
@@ -30,7 +48,9 @@ class _HomeState extends State<Home> {
               InkWell(
                 child: Container(
                   child: Text(
-                    _password,
+                    _password == ""
+                        ? "Click the button to generate a password"
+                        : _password,
                     style: TextStyle(
                       fontFamily: 'Consolas',
                       fontSize: 25.0,
@@ -39,7 +59,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 onTap: () {
+                  //Copy the password to the clipboard
                   Clipboard.setData(new ClipboardData(text: _password));
+                  //Notify user with a snackbar that the passwd has been copied
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text("Copyed to clipboard"),
@@ -70,22 +92,23 @@ class _HomeState extends State<Home> {
     );
   }
 
+  ///Creates a password with letters, symbols and numbers
   String generatePassword() {
     String letters = "abcdefghijklmnopqrstuvwxyz";
     String upperLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     String numbers = "012345789";
     String symbols = "!\"#%&'()*+,-./:;<=>?@[\\]^_`{|}~";
-    var buffer = StringBuffer();
+    var buffer = StringBuffer("");
     Random rng = new Random();
-    for (var i = 0; i < 16; i++) {
+    while (buffer.length < settings['length']) {
       var rand = rng.nextInt(16);
       if (rand >= 0 && rand <= 5) {
         buffer.write(letters[rng.nextInt(letters.length)]);
       } else if (rand >= 6 && rand <= 10) {
         buffer.write(upperLetters[rng.nextInt(upperLetters.length)]);
-      } else if (rand >= 11 && rand <= 12) {
+      } else if (rand >= 11 && rand <= 12 && settings['includeNumbers']) {
         buffer.write(numbers[rng.nextInt(numbers.length)]);
-      } else {
+      } else if (rand >= 13 && settings['includeSymbols']) {
         buffer.write(symbols[rng.nextInt(symbols.length)]);
       }
     }

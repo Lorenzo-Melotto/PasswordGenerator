@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:password_generator/Pages/Home.dart';
+import 'package:password_generator/Pages/Settings.dart';
 
 class RouteGenerator {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -7,11 +8,27 @@ class RouteGenerator {
     switch (settings.name) {
       case '/':
         return MaterialPageRoute(builder: (_) => Home());
-      default:
+      case '/settings':
+        //The type must be a map
+        if (args is Map) {
+          //The arguments must be booleans
+          if (args['includeNumbers'] is bool &&
+              args['includeSymbols'] is bool) {
+            return MaterialPageRoute(
+              builder: (_) => Settings(
+                includeNumbers: args['includeNumbers'],
+                includeSymbols: args['includeSymbols'],
+              ),
+            );
+          }
+        }
+        return _errorRoute();
+      default: //Handle wrong routes
         return _errorRoute();
     }
   }
 
+  ///Page generated when a wrong route is given to RouteGenerator
   static Route<dynamic> _errorRoute() {
     return MaterialPageRoute(
       builder: (_) {
