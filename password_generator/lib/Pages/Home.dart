@@ -10,10 +10,11 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   ///The password that will be generated
   String _password = "";
+  String _defaultText = "Click the button to generate a password";
   var settings = {
     'length': 16,
-    'includeSymbols': true,
-    'includeNumbers': true,
+    'includeSymbols': false,
+    'includeNumbers': false,
   };
   @override
   Widget build(BuildContext context) {
@@ -47,10 +48,9 @@ class _HomeState extends State<Home> {
               SizedBox(height: 25.0),
               InkWell(
                 child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Text(
-                    _password == ""
-                        ? "Click the button to generate a password"
-                        : _password,
+                    _password == "" ? _defaultText : _password,
                     style: TextStyle(
                       fontFamily: 'Consolas',
                       fontSize: 25.0,
@@ -59,26 +59,51 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 onTap: () {
-                  //Copy the password to the clipboard
-                  Clipboard.setData(new ClipboardData(text: _password));
-                  //Notify user with a snackbar that the passwd has been copied
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Copyed to clipboard"),
-                      action: SnackBarAction(
-                        label: 'OK',
-                        onPressed: () {},
+                  if (_password == "") {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("To copy a password, first generate one"),
+                        action: SnackBarAction(
+                          label: 'OK',
+                          onPressed: () {},
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    //Copy the password to the clipboard
+                    Clipboard.setData(new ClipboardData(text: _password));
+                    //Notify user with a snackbar that the passwd has been copied
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Copied to clipboard"),
+                        action: SnackBarAction(
+                          label: 'OK',
+                          onPressed: () {},
+                        ),
+                      ),
+                    );
+                  }
                 },
+              ),
+              SizedBox(height: 25.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.touch_app,
+                    size: 16.0,
+                  ),
+                  SizedBox(width: 5.0),
+                  Text("Tap on the password to copy it to your clipboard"),
+                ],
               ),
             ],
           ),
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        icon: Icon(Icons.create),
+        icon: Icon(Icons.lock),
         label: Text("Generate"),
         tooltip: "Generate a new password",
         onPressed: () {

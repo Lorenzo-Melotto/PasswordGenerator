@@ -13,11 +13,13 @@ class RouteGenerator {
         if (args is Map) {
           //The arguments must be booleans
           if (args['includeNumbers'] is bool &&
-              args['includeSymbols'] is bool) {
+              args['includeSymbols'] is bool &&
+              args['length'] is int) {
             return MaterialPageRoute(
               builder: (_) => Settings(
                 includeNumbers: args['includeNumbers'],
                 includeSymbols: args['includeSymbols'],
+                length: args['length'],
               ),
             );
           }
